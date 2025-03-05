@@ -1,6 +1,6 @@
 import { useState } from "react";
-// import {v4  as uuidv4} from 'uuid'; 
-// installation npm install uuid   use it like uuidv4();
+import toast from "react-hot-toast";
+import {v4  as uuidv4} from 'uuid'; 
 
 
 const CreateTask = ({tasks,setTasks})=>{
@@ -11,10 +11,21 @@ const CreateTask = ({tasks,setTasks})=>{
     });
     const handleSubmit = (e)=>{
         e.preventDefault();
+        if (task.name.length < 3 ){
+             return toast.error("A task must have more than 3 characters")};
+        if (task.name.length > 40 ) {
+            return toast.error("A task must not be  more than 40 characters")};
         setTasks((prev)=>{
              const list  = [...prev,task];
              localStorage.setItem("tasks",JSON.stringify(list));
+             console.log(prev);
              return list;
+        });
+        toast.success("Task created");
+        setTask({
+            id:"",
+            name:"",
+            status:"todo", // it can also be in progress or completed
         });
     };
     return(
