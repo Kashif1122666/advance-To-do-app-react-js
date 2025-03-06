@@ -1,43 +1,55 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import {v4  as uuidv4} from 'uuid'; 
+import { v4 as uuidv4 } from "uuid";
 
+const CreateTask = ({ tasks, setTasks }) => {
+  const [task, setTask] = useState({
+    id: "",
+    name: "",
+    status: "todo", // Default status
+  });
 
-const CreateTask = ({tasks,setTasks})=>{
-    const [task,setTask] = useState({
-        id:"",
-        name:"",
-        status:"todo", // it can also be in progress or completed
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (task.name.length < 3) {
+      return toast.error("A task must have more than 3 characters");
+    }
+    if (task.name.length > 40) {
+      return toast.error("A task must not be more than 40 characters");
+    }
+
+    const newTask = { ...task, id: uuidv4() };
+
+    setTasks((prev) => {
+      const list = [...prev, newTask];
+      localStorage.setItem("tasks", JSON.stringify(list));
+      return list;
     });
-    const handleSubmit = (e)=>{
-        e.preventDefault();
-        if (task.name.length < 3 ){
-             return toast.error("A task must have more than 3 characters")};
-        if (task.name.length > 40 ) {
-            return toast.error("A task must not be  more than 40 characters")};
-        setTasks((prev)=>{
-             const list  = [...prev,task];
-             localStorage.setItem("tasks",JSON.stringify(list));
-             console.log(prev);
-             return list;
-        });
-        toast.success("Task created");
-        setTask({
-            id:"",
-            name:"",
-            status:"todo", // it can also be in progress or completed
-        });
-    };
-    return(
 
-        <form onSubmit={handleSubmit}>
-            <input  onChange={(e)=>{
-                       setTask({...task, id:uuidv4(),  name: e.target.value})
-            }}
-            value={task.name}
-             type="text" className="border-2 border-slate-400  bg-slate-100 rounded-md mr-4 h-12  w-64 px-1"/>
-            <button className="bg-cyan-500 rounded-md px-4 h-12 text-white">Create</button>
-        </form>
-    )
-}
+    toast.success("Task created");
+    setTask({ id: "", name: "", status: "todo" });
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col md:flex-row items-center gap-4 w-full max-w-lg "
+    >
+      <input
+        onChange={(e) => {
+          setTask({ ...task, id: uuidv4(), name: e.target.value });
+        }}
+        value={task.name}
+        type="text"
+        placeholder="Enter task..."
+        className="border-2 border-gray-400 bg-gray-100 rounded-md h-12 px-3 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <button className="bg-blue-500 hover:bg-blue-600 transition-all text-white font-medium rounded-md px-6 h-12">
+        Create
+      </button>
+    </form>
+  );
+};
+
 export default CreateTask;
